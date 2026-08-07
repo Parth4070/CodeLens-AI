@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from app.api.router import router
 from app.config.settings import settings
 from app.utils.logger import logger
 
@@ -16,11 +16,4 @@ async def root():
         "message": "Welcome to CodeLens AI"
     }
 
-
-@app.get("/health")
-async def health():
-    logger.info("Health check endpoint called")
-
-    return {
-        "status": "healthy"
-    }
+app.include_router(router)
