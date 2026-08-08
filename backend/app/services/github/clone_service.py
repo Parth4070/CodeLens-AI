@@ -1,44 +1,57 @@
 from pathlib import Path
-from git import Repo
-from app.utils.logger import logger
 import shutil
+
+from git import Repo
+
 
 class CloneService:
     """
-    Clones Git repositeries.
+    Responsible for cloning Git repositories.
     """
 
     WORKSPACE = Path("workspace")
 
     def __init__(self):
-        """
-        Initialize the CloneService.
-        """
         self.WORKSPACE.mkdir(exist_ok=True)
 
-    def clone_repository(self, url:str) -> Path:
+    def clone_repository(self, repo_url: str) -> Path:
+        repo_name = repo_url.rstrip("/").split("/")[-1]
+
+        if repo_name.endswith(".git"):
+            repo_name = repo_name[:-4]
+
+        destination = self.WORKSPACE / repo_name
+
+        if destination.exists():
+            self._remove_directory(destination)
+
+        Repo.clone_from(
+            repo_url,
+            destination,
+            depth=1
+        )
+
+        git_directory = destination / ".git"
+
+        if git_directory.exists():
+            self._remove_directory(git_directory)
+
+        return destination
+
+    @staticmethod
+    def _remove_directory(path: Path):
         """
-        Clone a Git repository.
-
-        Args:
-            url: The URL of the Git repository.
-
-        Returns:
-            The path to the cloned repository.
+        Remove a directory while handling read-only files.
         """
-        try:
-            logger.info(f"Cloning repository: {url}")
-            repo_name = url.rstrip("/").split("/")[-1]
-            if repo_name.endswith(".git"):
-                repo_name = repo_name[:-4]
-            repo_path = self.WORKSPACE / repo_name
 
-            if repo_path.exists():
-                shutil.rmtree(repo_path)
+        def on_error(func, path, exc_info):
+            import os
+            import stat
 
-            Repo.clone_from(url, repo_path)
-            logger.info(f"Repository cloned successfully: {repo_path}")
-            return repo_path
-        except Exception as e:
-            logger.error(f"Failed to clone repository: {e}")
-            raise
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+
+        shutil.rmtree(
+            path,
+            onerror=on_error
+        )
