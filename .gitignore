@@ -4,6 +4,5 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-test_code.py
-test_parser.py
-test_chunker.py
+
+tests/
