@@ -1,4 +1,6 @@
+# pyrefly: ignore [missing-import]
 from langchain_core.documents import Document
+from app.utils.id_generator import generate_chunk_id
 
 class CodeChunker:
     """
@@ -29,7 +31,11 @@ class CodeChunker:
                 meta_data={
                     "file_path": file_path,
                     "language": language,
-                    "chunk_type": "imports"
+                    "chunk_type": "imports",
+                    "chunk_id":generate_chunk_id(
+                        file_path=file_path,
+                        chunk_type="imports"
+                    )
                 }
             ))
 
@@ -54,7 +60,12 @@ class CodeChunker:
                     "chunk_type": "class",
                     "class_name": class_info["name"],
                     "start_line": class_info["start_line"],
-                    "end_line": class_info["end_line"]
+                    "end_line": class_info["end_line"],
+                    "chunk_id":generate_chunk_id(
+                        file_path=file_path,
+                        chunk_type="class",
+                        class_name=class_info["name"],
+                    )
                 }
             ))
         
@@ -83,10 +94,17 @@ class CodeChunker:
                             "function_name": method["name"],
                             "start_line": method["start_line"],
                             "end_line": method["end_line"],
+                            "chunk_id": generate_chunk_id(
+                                file_path=file_path,
+                                chunk_type="method",
+                                class_name=class_info["name"],
+                                function_name=method["name"],
+                            )
                         },
                     )
                 )
         
+        #functions
         for function in parsed_code["functions"]:
 
             content = (
@@ -110,8 +128,13 @@ class CodeChunker:
                         "function_name": function["name"],
                         "start_line": function["start_line"],
                         "end_line": function["end_line"],
+                        "chunk_id": generate_chunk_id(
+                            file_path=file_path,
+                            chunk_type="function",
+                            function_name=function["name"],
+                        )
                     },
                 )
             )
 
-            return documents
+        return documents

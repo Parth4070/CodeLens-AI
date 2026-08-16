@@ -1,6 +1,6 @@
 # pyrefly: ignore [missing-import]
 from langchain_core.documents import Document
-
+from app.utils.id_generator import generate_chunk_id
 
 class TextChunker:
     """
@@ -18,6 +18,10 @@ class TextChunker:
                 "file_path": parsed_document["file_path"],
                 "language": parsed_document["language"],
                 "chunk_type": "document",
+                "chunk_id": generate_chunk_id(
+                    file_path=parsed_document["file_path"],
+                    chunk_type="document"
+                )
             },
         )
 

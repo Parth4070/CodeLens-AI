@@ -50,10 +50,9 @@ class IndexingService:
 
                 all_documents.extend(file_documents)
 
-            except Exception as e:
-                logger.error(
-                    f"Failed to process {file_path}: {e}"
-                )
+            except Exception :
+                raise
+
         
         logger.info(
             f"Successfully indexed {len(all_documents)} documents"

@@ -1,4 +1,3 @@
-from uuid import uuid4
 from qdrant_client.conversions.common_types import PointStruct
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
@@ -38,7 +37,7 @@ class QdrantService:
 
         for document, embedding in zip(documents, embeddings):
             point = PointStruct(
-                id=str(uuid4()),
+                id=document.metadata["chunk_id"],
                 vector={
                     "content": embedding
                 },
