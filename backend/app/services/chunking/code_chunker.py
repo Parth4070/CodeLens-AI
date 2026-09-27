@@ -28,7 +28,7 @@ class CodeChunker:
             
             documents.append(Document(
                 page_content="\n".join(import_lines),
-                meta_data={
+                metadata={
                     "file_path": file_path,
                     "language": language,
                     "chunk_type": "imports",
@@ -40,51 +40,61 @@ class CodeChunker:
             ))
 
         
-        #classes
+        # classes
         for class_info in parsed_code["classes"]:
-            method_names = [method["name"] for method in class_info["methods"]]
-            
+
+            method_names = [
+                method["name"]
+                for method in class_info["methods"]
+            ]
+
             content = (
                 f"Class: {class_info['name']}\n"
                 f"Methods: {', '.join(method_names)}\n"
             )
 
             if class_info["docstring"]:
-                content += f"Description:\n{class_info['docstring']}\n"
+                content += (
+                    f"Description:\n"
+                    f"{class_info['docstring']}\n"
+                )
 
-            documents.append(Document(
-                page_content=content,
-                metadata={
-                    "file_path": file_path,
-                    "language": language,
-                    "chunk_type": "class",
-                    "class_name": class_info["name"],
-                    "start_line": class_info["start_line"],
-                    "end_line": class_info["end_line"],
-                    "chunk_id":generate_chunk_id(
-                        file_path=file_path,
-                        chunk_type="class",
-                        class_name=class_info["name"],
-                    )
-                }
-            ))
-        
-        #class methods
-        for method in class_info["methods"]:
-            content = (
+            documents.append(
+                Document(
+                    page_content=content,
+                    metadata={
+                        "file_path": file_path,
+                        "language": language,
+                        "chunk_type": "class",
+                        "class_name": class_info["name"],
+                        "start_line": class_info["start_line"],
+                        "end_line": class_info["end_line"],
+                        "chunk_id": generate_chunk_id(
+                            file_path=file_path,
+                            chunk_type="class",
+                            class_name=class_info["name"],
+                        )
+                    }
+                )
+            )
+
+            # class methods
+            for method in class_info["methods"]:
+
+                content = (
                     f"Class: {class_info['name']}\n"
                     f"Method: {method['name']}\n\n"
                     f"{method['code']}"
                 )
 
-            if method["docstring"]:
-                content += (
-                    f"\n\nDescription:\n"
-                    f"{method['docstring']}"
-                )
+                if method["docstring"]:
+                    content += (
+                        f"\n\nDescription:\n"
+                        f"{method['docstring']}"
+                    )
 
-            documents.append(
-            Document(
+                documents.append(
+                    Document(
                         page_content=content,
                         metadata={
                             "file_path": file_path,
@@ -103,7 +113,7 @@ class CodeChunker:
                         },
                     )
                 )
-        
+            
         #functions
         for function in parsed_code["functions"]:
 

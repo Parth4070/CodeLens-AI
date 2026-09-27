@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from app.services.github.clone_service import CloneService
 from app.services.github.repository_service import RepositoryService
-
+from app.services.indexing.indexing_service import IndexingService
 
 router = APIRouter(
     prefix="/github",
@@ -12,7 +12,7 @@ router = APIRouter(
 
 clone_service = CloneService()
 repository_service = RepositoryService()
-
+indexing_service = IndexingService()
 
 class CloneRepositoryRequest(BaseModel):
     repo_url: str
@@ -27,9 +27,14 @@ async def clone_repository(
             request.repo_url
         )
 
+        documents = indexing_service.index_repository(path)
+
         return {
             "repository": path.name,
-            "path": str(path)
+            "repo_id":path.name,
+            "path": str(path),
+            "document_count":len(documents),
+            "status":"indexed"
         }
 
     except Exception as e:

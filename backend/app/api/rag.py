@@ -10,4 +10,4 @@ rag_service = RAGService()
 
 @router.post("/ask", response_model=RAGResponse)
 async def ask(request: AskRequest):
-    return rag_service.ask(request.question, request.top_k)
+    return rag_service.ask(repo_id=request.repo_id, question=request.question, top_k=request.top_k)

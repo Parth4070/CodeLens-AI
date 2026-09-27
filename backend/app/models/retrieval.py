@@ -13,4 +13,6 @@ class RetrievedChunk(BaseModel):
     start_line: int | None = None
     end_line: int | None = None
 
-    score: float
+    retrieval_score: float | None = None
+    rerank_score: float | None = None
+    

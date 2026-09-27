@@ -10,7 +10,8 @@ class Source(BaseModel):
     start_line: int | None = None
     end_line: int | None = None
 
-    score: float
+    rerank_score: float | None = None
+    retrieval_score: float | None = None
 
 class RAGResponse(BaseModel):
     answer: str

@@ -49,8 +49,8 @@ class RAGService:
             ]
         )
 
-    def ask(self, question:str, top_k: int=5) -> str:
-        chunks = self.retrieval_service.search(query= question, limit=top_k)
+    def ask(self, question:str,  repo_id: str, top_k: int=5) -> RAGResponse:
+        chunks = self.retrieval_service.search(repo_id=repo_id, query= question, limit=top_k)
 
         context = self.context_builder.build(chunks)
 
@@ -70,7 +70,8 @@ class RAGService:
             function_name = chunk.function_name,
             start_line = chunk.start_line,
             end_line = chunk.end_line,
-            score = chunk.score,
+            retrieval_score=chunk.retrieval_score,
+            rerank_score = chunk.rerank_score,
         ) for chunk in chunks]
 
         return RAGResponse(

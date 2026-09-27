@@ -2,7 +2,7 @@ from app.models.retrieval import RetrievedChunk
 
 class ContextBuilder:
     def build(self, chunks: list[RetrievedChunk]) -> str:
-        contexxt_parts = []
+        context_parts = []
 
         for index, chunk in enumerate(chunks, start = 1):
             location = chunk.file_path
@@ -20,7 +20,7 @@ class ContextBuilder:
                     symbol += "."
                 symbol += chunk.function_name
             
-            contexxt_parts.append(
+            context_parts.append(
                 f"""
                 --- SOURCE {index} ---
                 File: {location}
@@ -30,8 +30,5 @@ class ContextBuilder:
                 {chunk.content}
                 """
             )
-            
-            return "\n".join(contexxt_parts)
-
-
-    
+        
+        return "\n".join(context_parts)
