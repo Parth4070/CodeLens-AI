@@ -1,6 +1,5 @@
 import sys
-# pyrefly: ignore [missing-import]
-from loguru import logger
+from logger import logger
 
 logger.remove()
 
