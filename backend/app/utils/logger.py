@@ -1,5 +1,5 @@
 import sys
-from logger import logger
+from loguru import logger
 
 logger.remove()
 

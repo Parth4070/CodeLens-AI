@@ -43,3 +43,4 @@ GitPython
 # Utilities
 # -----------------------------
 requests
+loguru
