@@ -225,18 +225,21 @@ with st.sidebar:
                         )
 
                     else:
-
                         try:
-                            detail = response.json().get(
-                                "detail",
-                                response.text
+                            res_json = response.json()
+                            detail = (
+                                res_json.get("detail", response.text)
+                                if isinstance(res_json, dict)
+                                else str(res_json)
                             )
                         except Exception:
-                            detail = response.text
+                            detail = response.text or f"HTTP status {response.status_code}"
 
-                        st.error(
-                            f"Indexing failed: {detail}"
-                        )
+                        detail_str = str(detail).strip()
+                        if not detail_str:
+                            detail_str = f"Server returned HTTP {response.status_code}"
+
+                        st.error(f"Indexing failed: {detail_str}")
 
                 except requests.exceptions.ConnectionError:
                     st.error(
