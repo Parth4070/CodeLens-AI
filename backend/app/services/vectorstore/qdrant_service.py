@@ -20,23 +20,33 @@ class QdrantService:
             api_key=qdrant_api_key or None,
         )
     
-    def create_collection(self, vector_size:int):
+    def create_collection(self, vector_size: int):
         collections = self.client.get_collections()
-
         existing_collections = [collection.name for collection in collections.collections]
 
-        if self.collection_name in existing_collections:
-            return
-        
-        self.client.create_collection(
-            collection_name=self.collection_name,
-            vectors_config={
-                "content": VectorParams(
-                    size=vector_size,
-                    distance=Distance.COSINE,
-                )
-            },
-        )
+        if self.collection_name not in existing_collections:
+            self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config={
+                    "content": VectorParams(
+                        size=vector_size,
+                        distance=Distance.COSINE,
+                    )
+                },
+            )
+
+        self._ensure_payload_indices()
+
+    def _ensure_payload_indices(self):
+        try:
+            from qdrant_client.models import PayloadSchemaType
+            self.client.create_payload_index(
+                collection_name=self.collection_name,
+                field_name="repo_id",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
+        except Exception:
+            pass
     
     def add_docs(self, documents: list[Document], embeddings: list[list[float]]):
         if len(documents) != len(embeddings):

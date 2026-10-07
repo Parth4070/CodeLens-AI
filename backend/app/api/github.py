@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from app.utils.logger import logger
 
 from app.services.github.clone_service import CloneService
 from app.services.github.repository_service import RepositoryService
@@ -62,7 +63,14 @@ async def clone_repository(
             "status": "indexed"
         }
 
+    except ValueError as e:
+        logger.warning(f"Repository validation/clone issue: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
     except Exception as e:
+        logger.exception(f"Unexpected error in clone_repository: {e}")
         raise HTTPException(
             status_code=500,
             detail=str(e)

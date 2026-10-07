@@ -25,11 +25,24 @@ class CloneService:
         if destination.exists():
             self._remove_directory(destination)
 
-        Repo.clone_from(
-            repo_url,
-            destination,
-            depth=1
-        )
+        try:
+            Repo.clone_from(
+                repo_url,
+                destination,
+                depth=1
+            )
+        except Exception as e:
+            err_msg = str(e)
+            if "not found" in err_msg.lower():
+                raise ValueError(
+                    f"Repository not found: '{repo_url}'. Please verify the URL and ensure the repository is public."
+                )
+            elif "permission denied" in err_msg.lower() or "authentication failed" in err_msg.lower():
+                raise ValueError(
+                    f"Access denied to '{repo_url}'. Please ensure the repository is public."
+                )
+            else:
+                raise ValueError(f"Failed to clone repository: {err_msg.strip()}")
 
         git_directory = destination / ".git"
 
