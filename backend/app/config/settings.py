@@ -14,10 +14,11 @@ class Settings(BaseSettings):
     QDRANT_API_KEY: str | None = None
 
     GROQ_API_KEY: str | None = None
+    RERANKER_MODEL: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        extra="forbid"
+        extra="ignore"
     )
 
 

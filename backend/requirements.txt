@@ -14,20 +14,17 @@ python-multipart
 langchain
 langchain-core
 langchain-community
-langchain-huggingface
 langchain-ollama
 langchain-groq
 
 # -----------------------------
-# Embeddings / Transformers
+# Lightweight Embeddings & Reranking (ONNX - RAM < 200MB)
 # -----------------------------
-sentence-transformers==5.2.3
-transformers
-torch==2.13.0
-
-# Numerical dependencies
-numpy==2.2.6
-scipy==1.17.1
+fastembed>=0.9.0
+onnxruntime>=1.20.0
+tokenizers
+huggingface-hub
+numpy
 
 # -----------------------------
 # Vector Database

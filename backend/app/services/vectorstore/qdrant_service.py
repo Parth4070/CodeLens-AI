@@ -7,36 +7,17 @@ from app.config.settings import settings
 
 load_dotenv()
 
-def __init__(self, collection_name: str = "codelens"):
-    self.collection_name = collection_name
-
-    qdrant_url = os.getenv("QDRANT_URL")
-    qdrant_api_key = os.getenv("QDRANT_API_KEY")
-
-    print("=================================")
-    print("QDRANT URL:", qdrant_url)
-    print("QDRANT API KEY FOUND:", bool(qdrant_api_key))
-    print("=================================")
-
-    self.client = QdrantClient(
-        url=settings.QDRANT_URL,
-        api_key=settings.QDRANT_API_KEY,
-    )
-
 # pyrefly: ignore [missing-import]
 from langchain_core.documents import Document
 
 class QdrantService:
     def __init__(self, collection_name: str = 'codelens'):
         self.collection_name = collection_name
+        qdrant_url = os.getenv("QDRANT_URL") or settings.QDRANT_URL
+        qdrant_api_key = os.getenv("QDRANT_API_KEY") or settings.QDRANT_API_KEY
         self.client = QdrantClient(
-            url=os.getenv(
-                "QDRANT_URL",
-                "http://localhost:6333"
-            ),
-            api_key=os.getenv(
-                "QDRANT_API_KEY"
-            ) or None
+            url=qdrant_url,
+            api_key=qdrant_api_key or None,
         )
     
     def create_collection(self, vector_size:int):

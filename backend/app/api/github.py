@@ -10,9 +10,31 @@ router = APIRouter(
     tags=["GitHub"]
 )
 
-clone_service = CloneService()
-repository_service = RepositoryService()
-indexing_service = IndexingService()
+_clone_service = None
+_repository_service = None
+_indexing_service = None
+
+
+def get_clone_service() -> CloneService:
+    global _clone_service
+    if _clone_service is None:
+        _clone_service = CloneService()
+    return _clone_service
+
+
+def get_repository_service() -> RepositoryService:
+    global _repository_service
+    if _repository_service is None:
+        _repository_service = RepositoryService()
+    return _repository_service
+
+
+def get_indexing_service() -> IndexingService:
+    global _indexing_service
+    if _indexing_service is None:
+        _indexing_service = IndexingService()
+    return _indexing_service
+
 
 class CloneRepositoryRequest(BaseModel):
     repo_url: str
@@ -23,6 +45,9 @@ async def clone_repository(
     request: CloneRepositoryRequest
 ):
     try:
+        clone_service = get_clone_service()
+        indexing_service = get_indexing_service()
+
         path = clone_service.clone_repository(
             request.repo_url
         )
@@ -31,10 +56,10 @@ async def clone_repository(
 
         return {
             "repository": path.name,
-            "repo_id":path.name,
+            "repo_id": path.name,
             "path": str(path),
-            "document_count":len(documents),
-            "status":"indexed"
+            "document_count": len(documents),
+            "status": "indexed"
         }
 
     except Exception as e:
@@ -46,6 +71,8 @@ async def clone_repository(
 
 @router.get("/scan/{repository_name}")
 async def scan_repository(repository_name: str):
+    clone_service = get_clone_service()
+    repository_service = get_repository_service()
 
     repository_path = (
         clone_service.WORKSPACE / repository_name
